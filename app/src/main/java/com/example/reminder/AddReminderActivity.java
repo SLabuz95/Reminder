@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CalendarView;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -20,46 +19,85 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class AddReminderActivity extends AppCompatActivity {
     final int EDIT_TEMPLATE_REQUEST = 42;
     final int NEW_TEMPLATE_REQUEST = 43;
     final int NEW_REMINDER_REQUEST = 44;
-    RemindersListAdapter adapter;
+    ReminderTemplatesListAdapter adapter;
     RecyclerView recyclerView;
-    List<RemindersListData> list = new ArrayList<>();
+    List<ReminderTemplatesListData> list = new ArrayList<>();
     ViewListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        DatePicker datePicker = ((DatePicker)findViewById(R.id.datePicker));
+        datePicker.findViewById(getResources().getIdentifier("year", "id", "android")).setVisibility(View.GONE);
 
-        //Hide calender view (hardcoded version doesnt work)
-        CalendarView calendarView = (CalendarView) findViewById(R.id.calenderView);
-        calendarView.setVisibility(View.GONE);
+        TimePicker timePicker = (TimePicker)findViewById(R.id.timePicker);
+        timePicker.setIs24HourView(true);
 
-        list.add(new RemindersListData("Basia", "10-10-2021"));
-        list.add(new RemindersListData("Kasia", "12-10-2021"));
+        try {
+            readReminderTextsFromFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         listener = new ViewListener() {
             @Override
             public void onClick(View view, final int position) {
                 switch (view.getId()){
-                    case R.id.reminderContactLabel:
-                    case R.id.reminders_list_element:
+                    case R.id.editButton:
                     {
-                        /*Intent intent = new Intent(MainActivity.this, ContactListActivity.class);
-                        String reminder = list.get(position).contact;
+                        Intent intent = new Intent(AddReminderActivity.this, NewReminderActivity.class);
+                        intent.putExtra("templateId", position);
+                        intent.putExtra("templateContent", list.get(position).reminderText);
+                        startActivityForResult(intent, EDIT_TEMPLATE_REQUEST);
+                    }
+                    break;
+                    case R.id.deleteButton:
+                    {
+                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which){
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        list.remove(position);
+                                        adapter.notifyItemRemoved(position);
+                                        try {
+                                            writeReminderTemplates();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                        break;
+
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        //No button clicked
+                                        break;
+                                }
+                            }
+                        };
+                        AlertDialog.Builder builder = new AlertDialog.Builder(AddReminderActivity.this);
+                        builder.setMessage("Czy chcesz usunąć szablon \"" + list.get(position).reminderText + "\"?" ).setPositiveButton("Tak", dialogClickListener)
+                                .setNegativeButton("Nie", dialogClickListener).show();
+                    }
+                    break;
+                    case R.id.reminderName:
+                    case R.id.reminderListElement:
+                    {
+                        Intent intent = new Intent(AddReminderActivity.this, ContactListActivity.class);
+                        String reminder = list.get(position).reminderText;
                         DatePicker datePicker = ((DatePicker)findViewById(R.id.datePicker));
                         TimePicker timePicker = (TimePicker)findViewById(R.id.timePicker);
                         String date = ( (datePicker.getDayOfMonth() < 10)? "0" + String.valueOf(datePicker.getDayOfMonth()) : String.valueOf(datePicker.getDayOfMonth()))
-                                    + "." + ((datePicker.getMonth() + 1 < 10)? "0" + String.valueOf(datePicker.getMonth() + 1) : String.valueOf(datePicker.getMonth() + 1));
+                                + "." + ((datePicker.getMonth() + 1 < 10)? "0" + String.valueOf(datePicker.getMonth() + 1) : String.valueOf(datePicker.getMonth() + 1));
                         String time = ( (timePicker.getHour() < 10)? "0" + String.valueOf(timePicker.getHour()) : String.valueOf(timePicker.getHour()))
                                 + ":" + ((timePicker.getMinute()  < 10)? "0" + String.valueOf(timePicker.getMinute())  : String.valueOf(timePicker.getMinute()));
                         reminder = reminder.replaceAll("<date>", date);
                         reminder = reminder.replaceAll("<time>", time);
                         intent.putExtra("reminder", reminder);
-                        startActivity(intent);*/
+                        startActivity(intent);
                     }
                     break;
 
@@ -71,18 +109,18 @@ public class MainActivity extends AppCompatActivity {
         //list.add(new ReminderTemplatesListData("abc"));
         recyclerView
                 = (RecyclerView)findViewById(
-                R.id.remindersListView);
+                R.id.reminderTemplatesList);
         adapter
-                = new RemindersListAdapter(
+                = new ReminderTemplatesListAdapter(
                 list, listener, getApplication());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(
-                new LinearLayoutManager(MainActivity.this));
+                new LinearLayoutManager(AddReminderActivity.this));
     }
 
 
     private void readReminderTextsFromFile() throws IOException {
-       /* FileInputStream fin = openFileInput(getResources().getString(R.string.eor_marker));
+        FileInputStream fin = openFileInput(getResources().getString(R.string.eor_marker));
         int c;
         String temp="";
         String tempEOF = "<EOF>";
@@ -109,39 +147,23 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        fin.close();*/
+        fin.close();
     }
 
     private void writeReminderTemplates() throws IOException {
-        /*FileOutputStream file = openFileOutput( getResources().getString(R.string.eor_marker), Context.MODE_PRIVATE);
+        FileOutputStream file = openFileOutput( getResources().getString(R.string.eor_marker), Context.MODE_PRIVATE);
         final RecyclerView lv = (RecyclerView) findViewById(R.id.reminderTemplatesList);
         ReminderTemplatesListAdapter adapter = (ReminderTemplatesListAdapter) lv.getAdapter();
         for(int i = 0; i < adapter.getItemCount(); i++){
             file.write(adapter.list.get(i).reminderText.toString().getBytes());
             file.write("<EOF>".getBytes());
         }
-        file.close(); //File closed*/
+        file.close(); //File closed
     }
 
-    public void weekViewButtonOnClick(View view){
-
-    }
-
-    public void dayViewButtonOnClick(View view){
-
-    }
-
-    public void calenderViewButtonOnClick(View view){
-        CalendarView calendarView = (CalendarView) findViewById(R.id.calenderView);
-        if(calendarView.getVisibility() == View.VISIBLE)
-            calendarView.setVisibility(View.GONE);
-        else
-            calendarView.setVisibility(View.VISIBLE);
-    }
-
-    public void addReminderOnClick(View view){
-        Intent intent = new Intent(MainActivity.this, AddReminderActivity.class);
-        startActivityForResult(intent, NEW_REMINDER_REQUEST);
+    public void newTemplateButtonOnClick(View view){
+        Intent intent = new Intent(AddReminderActivity.this, NewReminderActivity.class);
+        startActivityForResult(intent, NEW_TEMPLATE_REQUEST);
     }
 
     @Override
@@ -149,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
                                     int resultCode,
                                     Intent intent) {
         switch (requestCode){
-            /*case NEW_TEMPLATE_REQUEST:
+            case NEW_TEMPLATE_REQUEST:
             {
                 if(resultCode == RESULT_OK) {
                     String newTemplate = intent.getStringExtra("template");
@@ -181,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-            break;*/
+            break;
         }
         super.onActivityResult(requestCode, resultCode, intent);
     }

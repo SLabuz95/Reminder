@@ -25,7 +25,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -78,7 +77,7 @@ public class ContactListActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, final int position) {
                 switch (view.getId()){
-                    case R.id.contact_label:
+                    case R.id.reminderContactLabel:
                     {
                         /* Procedure to react on check box select action
                         CheckBox checkBox = (CheckBox)view;

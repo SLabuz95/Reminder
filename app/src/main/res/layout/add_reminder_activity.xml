@@ -28,81 +28,69 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="150dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:weightSum="2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reminderTitle">
+        app:layout_constraintTop_toBottomOf="@+id/reminderTitle"
+        android:weightSum="2">
 
-        <Button
-            android:id="@+id/weekViewButton"
+        <DatePicker
+            android:id="@+id/datePicker"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:onClick="weekViewButtonOnClick"
-            android:text="Widok tygodnia" />
+            android:calendarViewShown="false"
+            android:datePickerMode="spinner"
+            android:dayOfWeekBackground="#00FFFFFF"
+            android:endYear="2100"
+            android:orientation="horizontal"
+            android:startYear="1900" />
 
-        <Button
-            android:id="@+id/dayViewButton"
+        <TimePicker
+            android:id="@+id/timePicker"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="0dp"
+            android:layout_marginRight="0dp"
             android:layout_weight="1"
-            android:onClick="dayViewButtonOnClick"
-            android:text="Widok dnia" />
+            android:splitMotionEvents="false"
+            android:timePickerMode="spinner"
+            app:layout_constraintEnd_toEndOf="parent" />
+
     </LinearLayout>
 
-    <Button
-        android:id="@+id/newReminderButton"
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:onClick="addReminderOnClick"
-        android:text="Dodaj wizytę"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <CalendarView
-        android:id="@+id/calenderView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
+        android:gravity="center"
+        android:text="@string/main_templates_list_title"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-    <Button
-        android:id="@+id/showHideCalenderViewButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:onClick="calenderViewButtonOnClick"
-        android:text="Pokaż/ukryj kalendarz"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calenderView" />
-
-    <TextView
-        android:id="@+id/remindersListTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:editable="false"
-        android:text="Lista wizyt"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        android:textStyle="bold|italic"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/showHideCalenderViewButton" />
-
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/remindersListView"
+        android:id="@+id/reminderTemplatesList"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/newReminderButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/remindersListTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <Button
+        android:id="@+id/newReminderButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:onClick="newTemplateButtonOnClick"
+        android:text="@string/new_template_button_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
