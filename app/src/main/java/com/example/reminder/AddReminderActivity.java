@@ -31,7 +31,7 @@ public class AddReminderActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.add_reminder_activity);
         DatePicker datePicker = ((DatePicker)findViewById(R.id.datePicker));
         datePicker.findViewById(getResources().getIdentifier("year", "id", "android")).setVisibility(View.GONE);
 
