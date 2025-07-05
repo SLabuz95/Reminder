@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Przypominacz</string>
+    <string name="app_name">V2 Przypominacz</string>
     <string name="new_reminder_template_activity_title">Nowy szablon</string>
     <string name="date_marker">&lt;date&gt;</string>
     <string name="time_marker">&lt;time&gt;</string>
@@ -12,9 +12,10 @@
     <string name="eor_marker">&lt;EOF&gt;</string>
     <string name="new_template_button_text">"Dodaj szablon"</string>
     <string name="main_templates_list_title">Szablony</string>
+    <string name="reminders_list_title">Wiadomości</string>
     <string name="new_template_editor_title">Edytor szablonu</string>
-    <string name="reminder_to_send_title">Wiadomość do wysłania</string>
-    <string name="contact_list_title">Kontakty</string>
+    <string name="reminder_title">Data i czas</string>
+    <string name="contact_list_title">Kontakt</string>
     <string name="send_message_to_selected">Wyślij do wybranych</string>
     <string name="send_message_to_number">"Wyślij na numer"</string>
 </resources>

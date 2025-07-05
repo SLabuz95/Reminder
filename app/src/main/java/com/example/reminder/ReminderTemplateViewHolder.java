@@ -20,7 +20,7 @@ public class ReminderTemplateViewHolder
         this.listener = listener;
         reminderTextView
                 = (TextView)itemView
-                .findViewById(R.id.reminderName);
+                .findViewById(R.id.reminderContact);
         reminderTextView.setOnClickListener(this);
         editButton = (ImageButton)itemView.findViewById(R.id.editButton);
         editButton.setOnClickListener(this);

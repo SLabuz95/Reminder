@@ -6,14 +6,15 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ContactListViewHolder
+public class RemindersListViewHolder
         extends RecyclerView.ViewHolder implements View.OnClickListener{
     //CheckBox checkBox;
-    TextView textView;
-    ViewListener listener;
+    TextView messageView;
+    ImageButton deleteButton;
     View view;
+    ViewListener listener;
 
-    ContactListViewHolder(View itemView, ViewListener listener)
+    RemindersListViewHolder(View itemView, ViewListener listener)
     {
         super(itemView);
         this.listener = listener;
@@ -21,8 +22,10 @@ public class ContactListViewHolder
                 = (CheckBox)itemView
                 .findViewById(R.id.contact_label);
         checkBox.setOnClickListener(this);*/
-        textView = (TextView)itemView.findViewById(R.id.reminderContactLabel);
-        textView.setOnClickListener(this);
+        messageView = (TextView)itemView.findViewById(R.id.messageView);
+        deleteButton = (ImageButton)itemView.findViewById(R.id.deleteButton);
+        messageView.setOnClickListener(this);
+        deleteButton.setOnClickListener(this);
         view  = itemView;
     }
 

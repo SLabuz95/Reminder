@@ -77,7 +77,7 @@ class ContactListAdapter
     public Filter getFilter() {
         return exampleFilter;
     }
-    private Filter exampleFilter = new Filter() {
+    private final Filter exampleFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             List<ContactListData> filteredList = new ArrayList<>();
