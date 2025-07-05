@@ -10,7 +10,6 @@ public class ContactListViewHolder
         extends RecyclerView.ViewHolder implements View.OnClickListener{
     //CheckBox checkBox;
     TextView textView;
-    ImageButton sendReminderButton;
     ViewListener listener;
     View view;
 
@@ -23,8 +22,7 @@ public class ContactListViewHolder
                 .findViewById(R.id.contact_label);
         checkBox.setOnClickListener(this);*/
         textView = (TextView)itemView.findViewById(R.id.reminderContactLabel);
-        sendReminderButton = (ImageButton)itemView.findViewById(R.id.sendMessageButton);
-        sendReminderButton.setOnClickListener(this);
+        textView.setOnClickListener(this);
         view  = itemView;
     }
 

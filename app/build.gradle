@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 35
 
     defaultConfig {
-        applicationId "com.example.reminder"
-        minSdkVersion 29
-        targetSdkVersion 29
+        applicationId 'com.example.reminderV2'
+        minSdkVersion 31
+        targetSdkVersion 35
         versionCode 1
-        versionName "1.0"
+        versionName '1.1'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

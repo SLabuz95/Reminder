@@ -20,6 +20,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,84 +41,28 @@ public class ContactListActivity extends AppCompatActivity {
     List<ContactListData> list = new ArrayList<>();
     ViewListener listener;
     int selected = 0;
-    int lastSendIntent = -1;
+    private long PressedTime;
+    private SearchView searchView = null;
+    private final long Timeout = 1000; // Change it to any value you want
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.contact_list_activity);
 
-        Intent intent = getIntent();
-        String reminder = intent.getStringExtra("reminder");
-
-        TextView messageToSendView = (TextView)findViewById(R.id.message_to_send_textview);
-        messageToSendView.setText(reminder);
-
-        //TextView selectedTextView = (TextView)findViewById(R.id.selected_contacts_textview);
-        //selectedTextView.setText("Wybrane: " + String.valueOf(selected));
-
-        if (ContextCompat.checkSelfPermission(ContactListActivity.this,
-                Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(ContactListActivity.this,
-                    new String[]{Manifest.permission.READ_CONTACTS}, 1);
-        }
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.SEND_SMS)) {
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.SEND_SMS},
-                        MY_PERMISSIONS_REQUEST_SEND_SMS);
-            }
-        }
         readContacts();
 
         listener = new ViewListener() {
             @Override
             public void onClick(View view, final int position) {
-                switch (view.getId()){
-                    case R.id.reminderContactLabel:
-                    {
-                        /* Procedure to react on check box select action
-                        CheckBox checkBox = (CheckBox)view;
-                        list.get(position).checkBox = checkBox.isChecked();
-                        if(checkBox.isChecked())
-                            selected++;
-                        else
-                            selected--;
-                        TextView selectedTextView = (TextView)findViewById(R.id.selected_contacts_textview);
-                        selectedTextView.setText("Wybrane: " + String.valueOf(selected));*/
-                    }
-                    break;
-                    case R.id.sendMessageButton:
-                    {
-                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which){
-                                    case DialogInterface.BUTTON_POSITIVE:
-                                        sendSMSMessage(list.get(position).phoneNumber);
-                                        break;
+                if (PressedTime + Timeout > System.currentTimeMillis()) return;
+                PressedTime = System.currentTimeMillis();
 
-                                    case DialogInterface.BUTTON_NEGATIVE:
-                                        //No button clicked
-                                        break;
-                                }
-                            }
-                        };
-                        AlertDialog.Builder builder = new AlertDialog.Builder(ContactListActivity.this);
-                        String nameorphone;
-                        if(list.get(position).contactName.isEmpty()){
-                            nameorphone = list.get(position).phoneNumber;
-                        }else{
-                            nameorphone = list.get(position).contactName;
-                        }
-                        builder.setMessage("Czy chcesz wysłać wiadomość do \"" + nameorphone + "\"?" ).setPositiveButton("Tak", dialogClickListener)
-                                .setNegativeButton("Nie", dialogClickListener).show();
-                    }
-                    break;
-
+                if (view.getId() == R.id.reminderContactLabel) {
+                    Intent intent = new Intent();
+                    intent.putExtra("contactName", list.get(position).contactName);
+                    intent.putExtra("phoneNumber", list.get(position).phoneNumber);
+                    setResult(RESULT_OK, intent);
+                    finish();
                 }
             }
         };
@@ -138,7 +83,7 @@ public class ContactListActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.contact_menu, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView = (SearchView) searchItem.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -154,133 +99,41 @@ public class ContactListActivity extends AppCompatActivity {
         return true;
     }
 
-    public void sendMessageByNumberClicked(View view){
-        EditText editText = (EditText)findViewById(R.id.editTextPhone);
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
-                        EditText editText = (EditText)findViewById(R.id.editTextPhone);
-                        sendSMSMessage(editText.getText().toString());
-                        break;
-
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        //No button clicked
-                        break;
-                }
-            }
-        };
-        AlertDialog.Builder builder = new AlertDialog.Builder(ContactListActivity.this);
-        builder.setMessage("Czy chcesz wysłać wiadomość do \"" + editText.getText() + "\"?" ).setPositiveButton("Tak", dialogClickListener)
-                .setNegativeButton("Nie", dialogClickListener).show();
-    }
-
-    public void sendToSelectedClicked(View view){
-        Toast.makeText(ContactListActivity.this, "Tymczasowo wyłączone.", Toast.LENGTH_LONG).show();
-    }
-
-    protected void sendSMSMessage(String phoneNumber) {
-
-        TextView messageView = (TextView)findViewById(R.id.message_to_send_textview);
-        // Intent Filter Tags for SMS SEND and DELIVER
-        String SENT = "SMS_SENT";
-// STEP-1___
-
-// STEP-2___
-        // SEND BroadcastReceiver
-        BroadcastReceiver sendSMS = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context arg0, Intent arg1) {
-
-                    switch (getResultCode()) {
-                        case Activity.RESULT_OK:
-                            if(lastSendIntent == -1) {
-                                lastSendIntent = 0;
-                                Toast.makeText(getBaseContext(), "SMS wysłano.",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                            break;
-                        case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                        case SmsManager.RESULT_ERROR_NO_SERVICE:
-                        case SmsManager.RESULT_ERROR_NULL_PDU:
-                        case SmsManager.RESULT_ERROR_RADIO_OFF:
-                            if(lastSendIntent == -1) {
-                                lastSendIntent = 0;
-                                Toast.makeText(getBaseContext(), "SMS nie wysłano.",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                            break;
-                    }
-            }
-        };
-
-
-// STEP-3___
-        // ---Notify when the SMS has been sent---
-        registerReceiver(sendSMS, new IntentFilter(SENT));
-
-        // ---Notify when the SMS has been delivered---
-        int MAX_SMS_MESSAGE_LENGTH = 70;
-        SmsManager sms = SmsManager.getDefault();
-
-        try {
-            if(messageView.getText().length() > MAX_SMS_MESSAGE_LENGTH) {
-                ArrayList<String> messageList = SmsManager.getDefault().divideMessage(messageView.getText().toString());
-                ArrayList<PendingIntent> sentPI = new ArrayList<PendingIntent>();
-                for(int i = 0 ; i < messageList.size(); i++){
-                    Intent sendIntent = new Intent(SENT);
-                    PendingIntent tempSend = PendingIntent.getBroadcast(this, 0, sendIntent, 0);
-                    sentPI.add(tempSend);
-                }
-                lastSendIntent = -1;
-                 sms.sendMultipartTextMessage(phoneNumber, null, messageList, sentPI, null);
-            } else {
-                Intent sendIntent = new Intent(SENT);
-                PendingIntent sentPI = PendingIntent.getBroadcast(this, 0, sendIntent, 0);
-                lastSendIntent = -1;
-                sms.sendTextMessage(phoneNumber, null, messageView.getText().toString(), sentPI, null);
-            }
-        } catch (Exception e) {
-            Toast.makeText(getBaseContext(), "SMS nie wysłano.",
-                    Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
     @Override
     public void onBackPressed()
     {
+        if (PressedTime + Timeout > System.currentTimeMillis()) return;
+        PressedTime = System.currentTimeMillis();
+
+        setResult(RESULT_CANCELED);
         finish();
     }
 
+
     private void readContacts(){
+            Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
 
-        Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+            // Loop Through All The Numbers
+            while (phones.moveToNext()) {
 
-        // Loop Through All The Numbers
-        while (phones.moveToNext()) {
+                String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                // Cleanup the phone number
+                phoneNumber = phoneNumber.replaceAll("[()\\s-]+", "");
 
-            String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-            String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-
-            // Cleanup the phone number
-            phoneNumber = phoneNumber.replaceAll("[()\\s-]+", "");
-
-            // Enter Into Hash Map
-            int i = 0;
-            boolean add = true;
-            for(i = 0; i < list.size(); i++) {
-                if(phoneNumber.equals(list.get(i).phoneNumber)){
-                    add = false;
-                    break;
+                // Enter Into Hash Map
+                int i = 0;
+                boolean add = true;
+                for(i = 0; i < list.size(); i++) {
+                    if(phoneNumber.equals(list.get(i).phoneNumber)){
+                        add = false;
+                        break;
+                    }
                 }
+                if (add)
+                    list.add(new ContactListData(name, phoneNumber));
             }
-            if (add)
-                list.add(new ContactListData(name, phoneNumber));
-        }
-
-        phones.close();
+            phones.close();
         }
 }
 
