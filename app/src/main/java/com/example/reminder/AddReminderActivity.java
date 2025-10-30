@@ -69,7 +69,7 @@ public class AddReminderActivity extends AppCompatActivity {
                 contactNumber = customNumber;
                 contactView.setText(contact + " ("+ contactNumber + ")");
             }
-            datePicker.updateDate(datePicker.getYear(), date.get(Calendar.MONTH) + 1, date.get(Calendar.DAY_OF_MONTH));
+            datePicker.updateDate(datePicker.getYear(), date.get(Calendar.MONTH) , date.get(Calendar.DAY_OF_MONTH));
             timePicker.setHour(hour);
             timePicker.setMinute(minute);
         }
@@ -98,7 +98,7 @@ public class AddReminderActivity extends AppCompatActivity {
         Bundle data = new Bundle();
         if(positionId != -1)
             data.putInt("id", positionId);
-        data.putSerializable("date", new Calendar.Builder().setDate(datePicker.getYear(), datePicker.getMonth() - 1, datePicker.getDayOfMonth()).build());
+        data.putSerializable("date", new Calendar.Builder().setDate(datePicker.getYear(), datePicker.getMonth() , datePicker.getDayOfMonth()).build());
         data.putInt("hour", timePicker.getHour());
         data.putInt("minute", timePicker.getMinute());
 
