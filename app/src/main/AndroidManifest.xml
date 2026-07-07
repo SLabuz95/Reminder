@@ -47,6 +47,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".AddReminderActivity" />
         </activity>
+        <activity android:name=".LogActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ReminderTemplatesListActivity" />
+        </activity>
+        <activity android:name=".SendingProgressActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".RemindersListActivity" />
+        </activity>
     </application>
 
 </manifest>
