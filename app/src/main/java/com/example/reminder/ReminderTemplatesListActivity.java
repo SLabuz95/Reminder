@@ -24,6 +24,7 @@ import java.util.List;
 public class ReminderTemplatesListActivity extends AppCompatActivity {
     final int EDIT_TEMPLATE_REQUEST = 42;
     final int NEW_TEMPLATE_REQUEST = 43;
+    final int SEND_MESSAGES = 44;
     ReminderTemplatesListAdapter adapter;
     RecyclerView recyclerView;
     List<ReminderTemplatesListData> list = new ArrayList<>();
@@ -93,7 +94,7 @@ public class ReminderTemplatesListActivity extends AppCompatActivity {
                         //reminder = reminder.replaceAll("<date>", date);
                         //reminder = reminder.replaceAll("<time>", time);
                         intent.putExtra("reminderTemplate", reminderTemplate);
-                        startActivity(intent);
+                        startActivityForResult(intent, SEND_MESSAGES);
                     }
                     break;
                 }
@@ -123,7 +124,7 @@ public class ReminderTemplatesListActivity extends AppCompatActivity {
 
 
     private void readReminderTextsFromFile() throws IOException {
-        FileInputStream fin = openFileInput(getResources().getString(R.string.eor_marker));
+        FileInputStream fin = openFileInput(getResources().getString(R.string.reminder_templates_file_name));
         int c;
         String temp="";
         String tempEOF = "<EOF>";
@@ -154,7 +155,7 @@ public class ReminderTemplatesListActivity extends AppCompatActivity {
     }
 
     private void writeReminderTemplates() throws IOException {
-        FileOutputStream file = openFileOutput( getResources().getString(R.string.eor_marker), Context.MODE_PRIVATE);
+        FileOutputStream file = openFileOutput( getResources().getString(R.string.reminder_templates_file_name), Context.MODE_PRIVATE);
         final RecyclerView lv = (RecyclerView) findViewById(R.id.reminderTemplatesList);
         ReminderTemplatesListAdapter adapter = (ReminderTemplatesListAdapter) lv.getAdapter();
         for(int i = 0; i < adapter.getItemCount(); i++){
@@ -168,11 +169,16 @@ public class ReminderTemplatesListActivity extends AppCompatActivity {
         Intent intent = new Intent(ReminderTemplatesListActivity.this, ReminderTemplateEditorActivity.class);
         startActivityForResult(intent, NEW_TEMPLATE_REQUEST);
     }
-
+    public void logViewButtonOnClick(View view){
+        Intent intent = new Intent(ReminderTemplatesListActivity.this,
+                LogActivity.class);
+        startActivity(intent);
+    }
     @Override
     protected void onActivityResult(int requestCode,
                                     int resultCode,
                                     Intent intent) {
+        boolean requestLogView = false;
         switch (requestCode){
             case NEW_TEMPLATE_REQUEST:
             {
@@ -207,8 +213,20 @@ public class ReminderTemplatesListActivity extends AppCompatActivity {
                 }
             }
             break;
+            case SEND_MESSAGES:
+            {
+                if(resultCode == RemindersListActivity.SHOW_LOG) {
+                    requestLogView = true;
+                }
+
+            }
+            break;
         }
         super.onActivityResult(requestCode, resultCode, intent);
+
+        if(requestLogView == true){
+            logViewButtonOnClick(null);
+        }
     }
 
 }

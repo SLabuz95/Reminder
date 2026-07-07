@@ -10,12 +10,19 @@
     <string name="new_template_accept">Zatwierdź</string>
     <string name="new_template_cancel">Anuluj</string>
     <string name="eor_marker">&lt;EOF&gt;</string>
+    <string name="reminder_templates_file_name">templates.txt</string>
+    <string name="log_file_name">log.json</string>
+    <string name="sending_progress_title_label">Wysyłanie</string>
     <string name="new_template_button_text">"Dodaj szablon"</string>
     <string name="main_templates_list_title">Szablony</string>
     <string name="reminders_list_title">Wiadomości</string>
+    <string name="logs_title">Historia</string>
+    <string name="logs_cancel_button">Powrót</string>
+    <string name="sending_progress_cancel_button">Przerwij</string>
     <string name="new_template_editor_title">Edytor szablonu</string>
     <string name="reminder_title">Data i czas</string>
     <string name="contact_list_title">Kontakt</string>
     <string name="send_message_to_selected">Wyślij do wybranych</string>
     <string name="send_message_to_number">"Wyślij na numer"</string>
+    <string name="show_fails_only">"Tylko błędy"</string>
 </resources>
