@@ -1,11 +1,10 @@
-# Introduction
+## Introduction
 An idea for the application was to send a SMS messages to customers of the hairdresser with an information about incoming appointment.
 
-# Goal
+## Goal
 Main goal is to simplify and automate the process of writing and sending a SMS message to selected customer. 
 
-# Concept
-## Version 1
+## Version 1.0
 ### General
 A user selects notification template, date and time of the appointment and the receiver of the notification (the customer).
 If the user requests to send the notification,
